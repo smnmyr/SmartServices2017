@@ -1,0 +1,143 @@
+# The ASBase REST API
+swagger: '2.0'
+info:
+  title: ASBase API
+  description: Broker your events using ASBase!
+  version: "1.0.0"
+# the domain of the service
+host: wotus.asbase.com
+# array of all schemes that your API supports
+schemes:
+  - http
+# will be prefixed to all paths
+basePath: /
+paths:
+  /search:
+    get:
+      summary: Simple Querying
+      description: |
+        Supports simple time-windowed queries for events.
+      produces:
+        - application/json
+      parameters:
+        - name: startTime
+          in: query
+          description: Start of time window.
+          required: false
+          type: string
+          format: "ISO DateTime"
+        - name: endTime
+          in: query
+          description: End of time window.
+          required: false
+          type: string
+          format: ISO DateTime
+      responses:
+        200:
+          description: Events in time window, if any.
+          schema: 
+            $ref: Activities
+        400:
+          description: Bad request, e.g. wrong date format.
+    post:
+      summary: Advanced Querying
+      description: |
+        Supports time-windowed queries that include an event template.
+      produces:
+        - application/json
+      consumes:
+        - application/streamtemplate+json
+      parameters:
+        - name: startTime
+          in: query
+          description: Start of time window.
+          required: false
+          type: string
+          format: ISO DateTime
+        - name: endTime
+          in: query
+          description: End of time window.
+          required: false
+          type: string
+          format: ISO DateTime
+        - name: template
+          in: body
+          schema:
+            $ref: ASTemplate
+      responses:
+        200:
+          description: Events in time window, if any.
+          schema: 
+            $ref: Activities
+        400:
+          description: Bad request, e.g. wrong date format.
+  /streams/{id}:
+    get:
+      summary: View Events
+      description: |
+        Inspect individual events.
+      produces:
+        - application/stream+json
+      parameters:
+        - name: "id"
+          in: path
+          description: Event ID
+          type: string
+          required: true
+      responses:
+        200:
+          description: The event.
+          schema:
+            $ref: Activity
+    post:
+      summary: Post Event
+      description: |
+        Submit new events in the ActivityStreams format.
+      consumes:
+        - application/stream+json
+      responses:
+        201:
+          description: Indication that the event was received.
+  /subscriptions:
+    post:
+      summary: Create Subscription
+      description: |
+        Submit a description that contains an event template and a callback URL.
+      consumes:
+        - application/streamsubscription+json
+      parameters:
+        - name: subscription
+          in: body
+          schema:
+            $ref: Subscription
+      responses:
+        201:
+          description: Indication that the subscription was created.
+definitions:
+  Activity:
+    "format": "https://github.com/activitystreams/registry/blob/master/activity-schema.yaml"
+  Activities:
+    tag: "http://activitystrea.ms/2.0/Collection"
+    media-type: "as"
+    type: object
+    properties:
+      "@type":
+        type: string
+        description: "http://activitystrea.ms/2.0/Collection"
+      "totalItems":
+        type: number
+        description: The number of activities in this structure.
+      "items":
+        type: array
+        items:
+          $ref: Activity
+  Subscription:
+    type: object
+    properties:
+      "callbackURL":
+        type: string
+      "ASTemplate":
+        $ref: ASTemplate
+  ASTemplate:
+    tag: "An activity template"
+    $ref: Activity

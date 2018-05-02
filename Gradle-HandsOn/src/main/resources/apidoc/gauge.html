@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Untitled Document</title>
+<script>
+var globalHeight = 75;
+//only function that needs to be called with gauge id and percentage
+function chgG(gauge,newH)
+   {
+	if (parseInt(newH,10) > 100 || parseInt(newH,10) < 0 || isNaN(parseInt(newH,10)))
+	   {
+	   alert("Value must be between 0 and 100");
+	   return;
+		}
+	var setGauge = document.getElementById("g"+gauge);
+	var newHeight = 100 - parseInt(newH,10);
+	document.getElementById("eg"+gauge).style.height=newHeight;
+	}
+</script>
+
+</head>
+<!--   HTML Example code  -->
+<body>
+<table>
+<tr>
+<td width="10"><span id="eg1" style=" position:fixed;z-index:2; vertical-align:fixed; background-color:gray; height:0px; width:10px"></span><div style="z-index:1; vertical-align:fixed; background-color:green; height:100px; width:10px"></div></td>
+<td width="10"><span id="eg2" style=" position:fixed;z-index:2; vertical-align:fixed; background-color:gray; height:0px; width:10px"></span><div style="z-index:1; vertical-align:fixed; background-color:green; height:100px; width:10px"></div></td>
+</tr>
+<tr>
+<td colspan="2"><input id="g1" type="text" value="10" /><input id="gb1" type="button" value="changeGauge1" onclick="chgG(1,document.getElementById('g1').value);" /></td>
+</tr>
+<tr>
+<td colspan="2"><input id="g2" type="text" value="10" /><input id="gb2" type="button" value="changeGauge2" onclick="chgG(2,globalHeight);" /></td>
+</tr>
+</table>
+</body>
+</html>
